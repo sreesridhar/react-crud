@@ -1,15 +1,33 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import reportWebVitals from "./reportWebVitals";
+import { Provider } from "react-redux";
+import { BrowserRouter } from "react-router-dom";
+import useNavigatorOnLine from "./hooks/useNavigatorOnLine";
+import { Router } from "./routes";
+import { store } from "./store";
+import { ErrorBoundary } from "./components";
+import { OfflinePage } from "./pages";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+function AppRender() {
+  const networkStatus = useNavigatorOnLine();
+  return (
+    <ErrorBoundary>
+      <Provider store={store}>
+        {networkStatus ? (
+          <BrowserRouter basename={process.env.PUBLIC_URL}>
+            <Router />
+          </BrowserRouter>
+        ) : (
+          <OfflinePage />
+        )}
+      </Provider>
+    </ErrorBoundary>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<AppRender />);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
